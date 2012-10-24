@@ -149,4 +149,17 @@ public class SWMap {
 		mRuning = false;
 	}
 	
+	public ArrayList<GeoPoint> getTrackPoints(){
+		ArrayList<GeoPoint> trackPoints = new ArrayList<GeoPoint>();
+		trackPoints.addAll(mTrackPoints);
+//		trackPoints.add(new GeoPoint((int) (39.915 * 1E6),
+//                (int) (116.404 * 1E6)));
+//		
+//		trackPoints.add(new GeoPoint((int) (39.935 * 1E6),
+//                (int) (116.404 * 1E6)));
+//		
+//		trackPoints.add(new GeoPoint((int) (39.915 * 1E6),
+//                (int) (116.304 * 1E6)));
+		return trackPoints;
+	}
 }
