@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,10 +41,11 @@ public class MainActivity extends MapActivity {
 	
 	public SWHandler mHandler = null;
 	
-	public ImageView mImageViewBar = null;
-	public ImageView mImageViewSpeed = null;
-	public TextView mTextViewBar = null;
-	public TextView mTextViewSpeed = null;
+	RelativeLayout relativeLayoutBar = null;
+	RelativeLayout relativeLayoutSpeed = null;
+	TextView mTextViewTime = null;
+	TextView mTextViewDistance = null;
+	TextView mTextViewSpeed = null;
 	
 	Weibo mWeibo = null;
 	static Oauth2AccessToken accessToken = null;
@@ -52,10 +54,13 @@ public class MainActivity extends MapActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);    
         setContentView(R.layout.activity_main);
-        mImageViewBar = (ImageView)findViewById(R.id.imageViewBar);
-        mImageViewSpeed = (ImageView)findViewById(R.id.imageViewSpeed);
-        mTextViewBar = (TextView)findViewById(R.id.textViewBar);
+        relativeLayoutBar = (RelativeLayout)findViewById(R.id.relativeLayoutBar);
+        relativeLayoutSpeed = (RelativeLayout)findViewById(R.id.relativeLayoutSpeed);
+        mTextViewTime = (TextView)findViewById(R.id.textViewTime);
+        mTextViewDistance = (TextView)findViewById(R.id.textViewDistance);
         mTextViewSpeed = (TextView)findViewById(R.id.textViewSpeed);
+        relativeLayoutBar.setVisibility(View.INVISIBLE);
+        relativeLayoutSpeed.setVisibility(View.INVISIBLE);
         
         MapView mapView = (MapView)findViewById(R.id.bmapsView);
         
@@ -85,17 +90,13 @@ public class MainActivity extends MapActivity {
 				SWMap.GetInstance().startRun();	
 		        refreshSpeed();
 		        refreshBar();
-		        mImageViewBar.setVisibility(View.VISIBLE);
-		        mImageViewSpeed.setVisibility(View.VISIBLE);
-		        mTextViewBar.setVisibility(View.VISIBLE);
-		        mTextViewSpeed.setVisibility(View.VISIBLE);
+		        relativeLayoutBar.setVisibility(View.VISIBLE);
+		        relativeLayoutSpeed.setVisibility(View.VISIBLE);
 				item.setTitle("结束跑步");
     		}else{
     			SWMap.GetInstance().stopRun();
-		        mImageViewBar.setVisibility(View.INVISIBLE);
-		        mImageViewSpeed.setVisibility(View.INVISIBLE);
-    			mTextViewBar.setVisibility(View.INVISIBLE);
-    			mTextViewSpeed.setVisibility(View.INVISIBLE);
+    	        relativeLayoutBar.setVisibility(View.INVISIBLE);
+    	        relativeLayoutSpeed.setVisibility(View.INVISIBLE);
     			item.setTitle("开始跑步");
     		}
 
@@ -163,12 +164,14 @@ public class MainActivity extends MapActivity {
 		mTextViewSpeed.setText(info);
     }
     
-    public void refreshBar(){
-		float distance = SWMap.GetInstance().getDistance();
+    public void refreshBar(){	
 		Time time = SWMap.GetInstance().getRunTime();
-		String info = String.format("时长%2d:%2d:%2d  距离%.2fkm", 
-				time.hour,time.minute,time.second,distance/1000);
-		mTextViewBar.setText(info);
+		String infoTime = String.format("%02d:%02d:%02d", 
+				time.hour,time.minute,time.second);
+		mTextViewTime.setText(infoTime);
+		float distance = SWMap.GetInstance().getDistance();
+		String infoDistance = String.format("%.2fkm",distance/1000);
+		mTextViewDistance.setText(infoDistance);
     }
     
 	/**
