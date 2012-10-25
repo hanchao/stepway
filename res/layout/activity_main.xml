@@ -1,8 +1,65 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 	<com.baidu.mapapi.MapView android:id="@+id/bmapsView"
 		android:layout_width="fill_parent" android:layout_height="fill_parent"
 		android:clickable="true" />
-</LinearLayout>
 
+	<RelativeLayout
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:layout_centerHorizontal="true" >
+
+		<ImageView
+		    android:id="@+id/imageViewBar"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_alignParentTop="true"
+		    android:src="@drawable/bar" />
+
+		<TextView
+		    android:id="@+id/textViewBar"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_centerHorizontal="true"
+		    android:layout_centerVertical="true"
+		    android:textColor="#000000" 
+			android:textSize="18dip"
+			android:textStyle="bold"  
+		    android:text="" />
+
+	</RelativeLayout>
+
+	<RelativeLayout
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentBottom="true" >
+
+		<ImageView
+		    android:id="@+id/imageViewSpeed"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_alignParentTop="true"
+		    android:src="@drawable/speed" />
+
+		<TextView
+		    android:id="@+id/textViewSpeed"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_centerHorizontal="true"
+		    android:layout_centerVertical="true"
+		    android:layout_marginLeft="1dip" 
+		    android:text=""
+		    android:textColor="#000000"
+		    android:textSize="18dip"
+		    android:textStyle="bold" />
+
+	</RelativeLayout>
+
+</RelativeLayout>

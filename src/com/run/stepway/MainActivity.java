@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -21,6 +23,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -32,7 +35,11 @@ import com.weibo.sdk.android.net.RequestListener;
 
 public class MainActivity extends MapActivity {
 
-	boolean mStartRun = false;
+	
+	public SWHandler mHandler = null;
+	
+	public TextView mTextViewBar = null;
+	public TextView mTextViewSpeed = null;
 	
 	Weibo mWeibo = null;
 	static Oauth2AccessToken accessToken = null;
@@ -41,10 +48,21 @@ public class MainActivity extends MapActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);    
         setContentView(R.layout.activity_main);
+        mTextViewBar = (TextView)findViewById(R.id.textViewBar);
+        mTextViewSpeed = (TextView)findViewById(R.id.textViewSpeed);
         
         MapView mapView = (MapView)findViewById(R.id.bmapsView);
+        
         SWMap.GetInstance().onCreate(this, mapView);
         
+        mHandler = new SWHandler();
+        mHandler.setMainActivity(this);
+        SWMap.GetInstance().setHandler(mHandler);
+        
+        refreshSpeed();
+        refreshBar();
+
+    	
         //mMapController.setCenter(myloc.getMyLocation());
         mWeibo = Weibo.getInstance("1398278549", "http://hanchao0123.diandian.com/");
     }
@@ -126,6 +144,16 @@ public class MainActivity extends MapActivity {
 	   }  
 	   return true;  
 	}  
+    
+    public void refreshSpeed(){
+		float speed = SWMap.GetInstance().getSpeed();
+		String strSpeed = String.format("%.2f", speed);
+		mTextViewSpeed.setText(strSpeed);
+    }
+    
+    public void refreshBar(){
+		mTextViewBar.setText("时长  00:00:00 距离 00.0 km");
+    }
     
 	/**
 	 * 截屏方法

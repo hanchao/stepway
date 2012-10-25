@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import android.app.Application;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.baidu.mapapi.BMapManager;
@@ -25,6 +27,8 @@ public class SWMap {
 	boolean mLocated = false;
 	boolean mRuning = false;
 	ArrayList<GeoPoint> mTrackPoints = new ArrayList<GeoPoint>();
+	float mSpeed = 0.0f;
+	SWHandler mHandler = null;
 	
 	static SWMap mMap = null;
 	
@@ -75,6 +79,11 @@ public class SWMap {
 				        GeoPoint point = new GeoPoint((int) (location.getLatitude() * 1E6),
 				                (int) (location.getLongitude() * 1E6));
 				        mTrackPoints.add(point);
+				        
+				        mSpeed = location.getSpeed();
+						Message msg = new Message();
+						msg.what = SWHandler.SET_SPEED;
+						mHandler.sendMessage(msg);
 					}
 			       // mMapController.setCenter(point);
 				}
@@ -83,7 +92,7 @@ public class SWMap {
         
         mMyloc = new SWTrackOverlay(mapActivity, mMapView);
         mMyloc.enableMyLocation(); // 启用定位
-        mMyloc.enableCompass();    // 启用指南针
+        //mMyloc.enableCompass();    // 启用指南针
         mMapView.getOverlays().add(mMyloc);
 	}
 
@@ -161,11 +170,20 @@ public class SWMap {
 	public void stopRun(){
 		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
 		mRuning = false;
+		mSpeed = 0.0f;
 	}
 	
 	public ArrayList<GeoPoint> getTrackPoints(){
 		ArrayList<GeoPoint> trackPoints = new ArrayList<GeoPoint>();
 		trackPoints.addAll(mTrackPoints);
 		return trackPoints;
+	}
+	
+	public float getSpeed(){
+		return mSpeed;
+	}
+	
+	public void setHandler(SWHandler handler){
+		mHandler = handler;
 	}
 }
