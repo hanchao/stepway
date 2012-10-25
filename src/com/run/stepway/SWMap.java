@@ -1,6 +1,7 @@
 package com.run.stepway;
 
 import java.util.ArrayList;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -233,10 +234,10 @@ public class SWMap {
 			Time curTime = new Time(); 
 			curTime.setToNow();
 			long millis = curTime.toMillis(false)-mStartTime.toMillis(false);
-			runTime.set(millis);
+			runTime.set(millis-TimeZone.getDefault().getRawOffset());
 		}else{
 			long millis = mEndTime.toMillis(false)-mStartTime.toMillis(false);
-			runTime.set(millis);
+			runTime.set(millis-TimeZone.getDefault().getRawOffset());
 		}
 		return runTime;
 	}
