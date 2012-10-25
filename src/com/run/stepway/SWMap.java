@@ -42,7 +42,7 @@ public class SWMap {
 	public void init(Application app){
         mBMapMan = new BMapManager(app);
         mBMapMan.init("702F895FB6970D5DC38E3C9AC3C91A240800A7A9", null);
-        mBMapMan.getLocationManager().setNotifyInternal(10, 5);
+        mBMapMan.getLocationManager().setNotifyInternal(1, 1);
 	}
 	
 	public void destroy(){
@@ -130,9 +130,11 @@ public class SWMap {
 	
 	public void goCurPos(){
 		Location location = mBMapMan.getLocationManager().getLocationInfo();
-        GeoPoint point = new GeoPoint((int) (location.getLatitude() * 1E6),
-                (int) (location.getLongitude() * 1E6));
-       mMapController.setCenter(point);
+		if(location != null){
+			GeoPoint point = new GeoPoint((int) (location.getLatitude() * 1E6),
+	                (int) (location.getLongitude() * 1E6));
+			mMapController.setCenter(point);
+		}
 	}
 	
 	public boolean isRuning(){
@@ -142,24 +144,28 @@ public class SWMap {
 	public void startRun(){
 		mTrackPoints.clear();
 		mMapController.setZoom(15);
+		goCurPos();
+		mBMapMan.getLocationManager().requestLocationUpdates(mLocationListener);
 		mRuning = true;
+		
+//		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
+//      (int) (116.404 * 1E6)));
+//
+//		mTrackPoints.add(new GeoPoint((int) (39.935 * 1E6),
+//      (int) (116.404 * 1E6)));
+//
+//		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
+//      (int) (116.304 * 1E6)));
 	}
 	
 	public void stopRun(){
+		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
 		mRuning = false;
 	}
 	
 	public ArrayList<GeoPoint> getTrackPoints(){
 		ArrayList<GeoPoint> trackPoints = new ArrayList<GeoPoint>();
 		trackPoints.addAll(mTrackPoints);
-//		trackPoints.add(new GeoPoint((int) (39.915 * 1E6),
-//                (int) (116.404 * 1E6)));
-//		
-//		trackPoints.add(new GeoPoint((int) (39.935 * 1E6),
-//                (int) (116.404 * 1E6)));
-//		
-//		trackPoints.add(new GeoPoint((int) (39.915 * 1E6),
-//                (int) (116.304 * 1E6)));
 		return trackPoints;
 	}
 }
