@@ -162,7 +162,7 @@ public class MainActivity extends MapActivity {
     
     public void refreshSpeed(){
 		float speed = SWMap.GetInstance().getSpeed();
-		String info = String.format("%.2f", speed/0.2778);
+		String info = String.format("%.1f", speed/0.2778);
 		mTextViewSpeed.setText(info);
     }
     

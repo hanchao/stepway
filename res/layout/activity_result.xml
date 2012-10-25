@@ -1,6 +1,126 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="#FFFFFF" >
+
+    <ImageView
+        android:id="@+id/imageViewMedal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/medal" />
+
+    <ImageView
+        android:id="@+id/imageViewBurn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imageViewMedal"
+        android:layout_marginTop="28dp"
+        android:layout_marginLeft="64dp"
+        android:src="@drawable/burn" />
+
+    <ImageView
+        android:id="@+id/imageViewDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imageViewBurn"
+        android:layout_below="@+id/imageViewBurn"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/icon_home_distance" />
+
+    <ImageView
+        android:id="@+id/imageViewTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imageViewDistance"
+        android:layout_below="@+id/imageViewDistance"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/icon_home_time" />
+
+    <ImageView
+        android:id="@+id/imageViewAverageSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imageViewTime"
+        android:layout_below="@+id/imageViewTime"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/icon_home_averagespeed" />
+
+    <ImageView
+        android:id="@+id/imageViewMostSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/imageViewAverageSpeed"
+        android:layout_below="@+id/imageViewAverageSpeed"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/icon_mostspeed" />
+
+    <TextView
+        android:id="@+id/textViewBurn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageViewBurn"
+        android:layout_toRightOf="@+id/imageViewBurn"
+        android:layout_marginLeft="64dp"
+	    android:textColor="#FFBB1C"
+	    android:textSize="32dip"
+	    android:textStyle="bold"
+        android:text="0.0卡" />
+
+    <TextView
+        android:id="@+id/textViewTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageViewTime"
+        android:layout_alignLeft="@+id/textViewBurn"
+        android:textColor="#000000"
+	    android:textSize="18dip"
+	    android:textStyle="bold"
+        android:text="00:00:00" />
+
+    <TextView
+        android:id="@+id/textViewDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageViewDistance"
+        android:layout_alignLeft="@+id/textViewTime"
+        android:textColor="#000000"
+	    android:textSize="18dip"
+	    android:textStyle="bold"
+        android:text="0.00km" />
+
+    <TextView
+        android:id="@+id/textViewAverageSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textViewTime"
+        android:layout_alignBottom="@+id/imageViewAverageSpeed"
+        android:textColor="#000000"
+	    android:textSize="18dip"
+	    android:textStyle="bold"
+        android:text="0.0km/h" />
+
+    <TextView
+        android:id="@+id/textViewMostSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageViewMostSpeed"
+        android:layout_alignLeft="@+id/textViewAverageSpeed"
+        android:textColor="#000000"
+	    android:textSize="18dip"
+	    android:textStyle="bold"
+        android:text="0.0km/h" />
+
+    <ImageButton
+        android:id="@+id/imageButtonWeibo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="48dp"
+        android:src="@drawable/button_weibo_normal" />
 
 </RelativeLayout>

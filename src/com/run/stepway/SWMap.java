@@ -38,6 +38,7 @@ public class SWMap {
 	boolean mRuning = false;
 	ArrayList<GeoPoint> mTrackPoints = new ArrayList<GeoPoint>();
 	float mSpeed = 0.0f;
+	float mMaxSpeed = 0.0f;
 	float mDistance = 0.0f;
 
 	Time mStartTime = new Time(); 
@@ -106,6 +107,9 @@ public class SWMap {
 				        mTrackPoints.add(point);
 				        
 				        mSpeed = location.getSpeed();
+				        if(mMaxSpeed<mSpeed){
+				        	mMaxSpeed = mSpeed;
+				        }
 						Message msg = new Message();
 						msg.what = SWHandler.REFRESH;
 						mHandler.sendMessage(msg);
@@ -179,6 +183,9 @@ public class SWMap {
 	
 	public void startRun(){
 		mTrackPoints.clear();
+		mSpeed = 0.0f;
+		mMaxSpeed = 0.0f;
+		mDistance = 0.0f;
 		//mMapController.setZoom(15);
 		goCurPos();
 		mBMapMan.getLocationManager().requestLocationUpdates(mLocationListener);
@@ -211,8 +218,6 @@ public class SWMap {
 		mTimer.cancel();
 		mTimer.purge();
 		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
-		mSpeed = 0.0f;
-		mDistance = 0.0f;
 		mEndTime.setToNow();
 	}
 	
@@ -226,8 +231,36 @@ public class SWMap {
 		return mSpeed;
 	}
 	
+	public float getMaxSpeed(){
+		return mMaxSpeed;
+	}
+	
 	public float getDistance(){
 		return mDistance;
+	}
+	
+	public float getAverageSpeed(){
+		Time time = getRunTime();
+		return  mDistance / (time.hour * 3600 + time.minute * 60 + time.second);
+	}
+	
+	public float getBurn(){
+		//快跑(一小时12公里)700卡
+		//慢跑(一小时9公里)655卡
+		//快走(一小时8公里)555卡
+		//慢走(一小时4公里)255卡
+		float burn = 0.0f;
+		float averageSpeed = getAverageSpeed()/0.2778f;
+		if(averageSpeed<=6){//慢走
+			burn = 255 * getDistance()/1000;
+		}else if(averageSpeed<=8.5){//快走
+			burn = 555 * getDistance()/1000;
+		}else if(averageSpeed<=11.5){//慢跑
+			burn = 655 * getDistance()/1000;
+		}else{//快跑
+			burn = 700 * getDistance()/1000;
+		}
+		return burn;
 	}
 	
 	public Time getRunTime(){
