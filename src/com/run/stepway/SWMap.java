@@ -69,7 +69,7 @@ public class SWMap {
 
 			@Override
 			public void onLocationChanged(Location location) {
-				if(location != null){
+				if(location != null && location.getProvider() == "gps"){
 					mLocated = true;
 					if(isRuning()){
 				        GeoPoint point = new GeoPoint((int) (location.getLatitude() * 1E6),
