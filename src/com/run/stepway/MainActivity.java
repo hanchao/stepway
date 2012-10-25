@@ -47,8 +47,7 @@ public class MainActivity extends MapActivity {
 	TextView mTextViewDistance = null;
 	TextView mTextViewSpeed = null;
 	
-	Weibo mWeibo = null;
-	static Oauth2AccessToken accessToken = null;
+	SWWeibo mWeibo = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,8 +69,9 @@ public class MainActivity extends MapActivity {
         mHandler.setMainActivity(this);
         SWMap.GetInstance().setHandler(mHandler);
         	
-        //mMapController.setCenter(myloc.getMyLocation());
-        mWeibo = Weibo.getInstance("1398278549", "http://hanchao0123.diandian.com/");
+        mWeibo = new SWWeibo();
+        mWeibo.setMainActivity(this);
+        mWeibo.setHandler(mHandler);
     }
   
 
@@ -118,7 +118,11 @@ public class MainActivity extends MapActivity {
 				e.printStackTrace();
 			}
     		
-    		mWeibo.authorize(this, new AuthDialogListener());
+    		if(mWeibo.isAuthorize()){
+    			share();
+    		}
+    		mWeibo.authorize();
+    		
     	}
     	break; 
     	case R.id.itemSatellite: { 
@@ -174,6 +178,27 @@ public class MainActivity extends MapActivity {
 		float distance = SWMap.GetInstance().getDistance();
 		String infoDistance = String.format("%.2fkm",distance/1000);
 		mTextViewDistance.setText(infoDistance);
+    }
+    
+    public void share(){	
+    	mWeibo.Share("轨迹", "/sdcard/dcim/beijing.png", "", "");
+    }
+    
+    public void weiboAurhorizeSuccess(){	
+    	Toast.makeText(this, "验证成功！", Toast.LENGTH_SHORT)
+		.show();
+    }
+    public void weiboAurhorizeError(){	
+    	Toast.makeText(this, "验证失败！", Toast.LENGTH_SHORT)
+		.show();
+    }
+    public void weiboShareSuccess(){	
+    	Toast.makeText(this, "分享成功！", Toast.LENGTH_SHORT)
+		.show();
+    }
+    public void weiboShareError(){	
+    	Toast.makeText(this, "分享失败！", Toast.LENGTH_SHORT)
+		.show();
     }
     
 	/**
@@ -256,84 +281,11 @@ public class MainActivity extends MapActivity {
 	    super.onResume();
 	}
 	
-	
-	class AuthDialogListener implements WeiboAuthListener {
-
-		@Override
-		public void onComplete(Bundle values) {
-			String token = values.getString("access_token");
-			String expires_in = values.getString("expires_in");
-			MainActivity.accessToken = new Oauth2AccessToken(token, expires_in);
-			if (MainActivity.accessToken.isSessionValid()) {
-				String date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new java.util.Date(MainActivity.accessToken.getExpiresTime()));
-				//mText.setText("认证成功: \r\n access_token: "+ token + "\r\n" + "expires_in: " + expires_in+"\r\n有效期："+date);
-				try {
-	                Class sso=Class.forName("com.weibo.sdk.android.api.WeiboAPI");//如果支持weiboapi的话，显示api功能演示入口按钮
-	                //apiBtn.setVisibility(View.VISIBLE);
-	            } catch (ClassNotFoundException e) {
-//	                e.printStackTrace();
-	                //Log.i(TAG, "com.weibo.sdk.android.api.WeiboAPI not found");
-	               
-	            }
-				//cancelBtn.setVisibility(View.VISIBLE);
-				//AccessTokenKeeper.keepAccessToken(MainActivity.this, accessToken);
-				//Toast.makeText(MainActivity.this, "认证成功", Toast.LENGTH_SHORT).show();
-				
-				StatusesAPI api = new StatusesAPI(MainActivity.accessToken);
-				//api.update("test from stepway", "90", "90", new RequestListener(){
-				api.upload("test from stepway", "/sdcard/dcim/beijing.png", "90", "90", new RequestListener(){
-
-					@Override
-					public void onComplete(String arg0) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					@Override
-					public void onError(WeiboException arg0) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					@Override
-					public void onIOException(IOException arg0) {
-						// TODO Auto-generated method stub
-						
-					}
-				
-				});
-			}
-		}
-
-		@Override
-		public void onError(WeiboDialogError e) {
-			//Toast.makeText(getApplicationContext(), "Auth error : " + e.getMessage(),
-			//		Toast.LENGTH_LONG).show();
-		}
-
-		@Override
-		public void onCancel() {
-			//Toast.makeText(getApplicationContext(), "Auth cancel", Toast.LENGTH_LONG).show();
-		}
-
-		@Override
-		public void onWeiboException(WeiboException e) {
-			//Toast.makeText(getApplicationContext(), "Auth exception : " + e.getMessage(),
-			//		Toast.LENGTH_LONG).show();
-		}
-
-	}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
-        /**
-         * 下面两个注释掉的代码，仅当sdk支持sso时有效，
-         */
-//        if(mSsoHandler!=null){
-//            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
-//        }
+        mWeibo.onActivityResult(requestCode, resultCode, data);
     }
 
     
