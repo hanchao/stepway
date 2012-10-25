@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 public class SWHandler extends Handler{
 	
-	public static final int SET_SPEED = 100;
+	public static final int REFRESH = 100;
 	
 	public MainActivity mMainActivity = null;
 	
@@ -19,8 +19,9 @@ public class SWHandler extends Handler{
 		// TODO Auto-generated method stub
 		try {
 			switch (msg.what) {
-			case SET_SPEED:
+			case REFRESH:
 				mMainActivity.refreshSpeed();
+				mMainActivity.refreshBar();
 				break;
 			
 			case 2:

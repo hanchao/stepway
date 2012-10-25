@@ -17,12 +17,14 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,8 @@ public class MainActivity extends MapActivity {
 	
 	public SWHandler mHandler = null;
 	
+	public ImageView mImageViewBar = null;
+	public ImageView mImageViewSpeed = null;
 	public TextView mTextViewBar = null;
 	public TextView mTextViewSpeed = null;
 	
@@ -48,6 +52,8 @@ public class MainActivity extends MapActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);    
         setContentView(R.layout.activity_main);
+        mImageViewBar = (ImageView)findViewById(R.id.imageViewBar);
+        mImageViewSpeed = (ImageView)findViewById(R.id.imageViewSpeed);
         mTextViewBar = (TextView)findViewById(R.id.textViewBar);
         mTextViewSpeed = (TextView)findViewById(R.id.textViewSpeed);
         
@@ -58,11 +64,7 @@ public class MainActivity extends MapActivity {
         mHandler = new SWHandler();
         mHandler.setMainActivity(this);
         SWMap.GetInstance().setHandler(mHandler);
-        
-        refreshSpeed();
-        refreshBar();
-
-    	
+        	
         //mMapController.setCenter(myloc.getMyLocation());
         mWeibo = Weibo.getInstance("1398278549", "http://hanchao0123.diandian.com/");
     }
@@ -81,9 +83,19 @@ public class MainActivity extends MapActivity {
     	case R.id.itemRun: {
     		if(!SWMap.GetInstance().isRuning()){
 				SWMap.GetInstance().startRun();	
+		        refreshSpeed();
+		        refreshBar();
+		        mImageViewBar.setVisibility(View.VISIBLE);
+		        mImageViewSpeed.setVisibility(View.VISIBLE);
+		        mTextViewBar.setVisibility(View.VISIBLE);
+		        mTextViewSpeed.setVisibility(View.VISIBLE);
 				item.setTitle("结束跑步");
     		}else{
     			SWMap.GetInstance().stopRun();
+		        mImageViewBar.setVisibility(View.INVISIBLE);
+		        mImageViewSpeed.setVisibility(View.INVISIBLE);
+    			mTextViewBar.setVisibility(View.INVISIBLE);
+    			mTextViewSpeed.setVisibility(View.INVISIBLE);
     			item.setTitle("开始跑步");
     		}
 
@@ -147,12 +159,16 @@ public class MainActivity extends MapActivity {
     
     public void refreshSpeed(){
 		float speed = SWMap.GetInstance().getSpeed();
-		String strSpeed = String.format("%.2f", speed);
-		mTextViewSpeed.setText(strSpeed);
+		String info = String.format("%.2f", speed/0.2778);
+		mTextViewSpeed.setText(info);
     }
     
     public void refreshBar(){
-		mTextViewBar.setText("时长  00:00:00 距离 00.0 km");
+		float distance = SWMap.GetInstance().getDistance();
+		Time time = SWMap.GetInstance().getRunTime();
+		String info = String.format("时长%2d:%2d:%2d  距离%.2fkm", 
+				time.hour,time.minute,time.second,distance/1000);
+		mTextViewBar.setText(info);
     }
     
 	/**

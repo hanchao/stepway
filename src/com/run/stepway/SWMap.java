@@ -1,11 +1,14 @@
 package com.run.stepway;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Application;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
+import android.text.format.Time;
 import android.util.Log;
 
 import com.baidu.mapapi.BMapManager;
@@ -20,6 +23,12 @@ import com.baidu.mapapi.MyLocationOverlay;
 public class SWMap {
 
 	static BMapManager mBMapMan = null;
+	
+	static double DEF_PI = 3.14159265359; // PI
+	static double DEF_2PI= 6.28318530712; // 2*PI
+	static double DEF_PI180= 0.01745329252; // PI/180.0
+	static double DEF_R =6370693.5; // radius of earth
+	
 	MapView mMapView = null;
 	MapController mMapController = null;
 	LocationListener mLocationListener = null;
@@ -28,7 +37,22 @@ public class SWMap {
 	boolean mRuning = false;
 	ArrayList<GeoPoint> mTrackPoints = new ArrayList<GeoPoint>();
 	float mSpeed = 0.0f;
+	float mDistance = 0.0f;
+
+	Time mStartTime = new Time(); 
+	Time mEndTime = new Time(); 
+	
 	SWHandler mHandler = null;
+	
+	Timer mTimer = new Timer( );
+
+	TimerTask mTask = new TimerTask( ) {
+		public void run ( ) {
+			Message message = new Message( );
+			message.what = SWHandler.REFRESH;
+			mHandler.sendMessage(message);
+		}
+	};
 	
 	static SWMap mMap = null;
 	
@@ -73,19 +97,27 @@ public class SWMap {
 
 			@Override
 			public void onLocationChanged(Location location) {
-				if(location != null && location.getProvider() == "gps"){
+				if(location != null && location.getProvider().compareTo("gps") == 0){
+					String str = location.getProvider();
 					mLocated = true;
 					if(isRuning()){
 				        GeoPoint point = new GeoPoint((int) (location.getLatitude() * 1E6),
 				                (int) (location.getLongitude() * 1E6));
+				        if(!mTrackPoints.isEmpty()){
+				        	GeoPoint pointLast = mTrackPoints.get(mTrackPoints.size()-1);
+				        	mDistance += GetDistance(location.getLongitude(),location.getLatitude(),
+				        			pointLast.getLongitudeE6()/1E6,pointLast.getLatitudeE6()/1E6);
+				        }
 				        mTrackPoints.add(point);
 				        
 				        mSpeed = location.getSpeed();
 						Message msg = new Message();
-						msg.what = SWHandler.SET_SPEED;
+						msg.what = SWHandler.REFRESH;
 						mHandler.sendMessage(msg);
 					}
 			       // mMapController.setCenter(point);
+				}else{
+					mLocated = false;
 				}
 			}
         };
@@ -152,9 +184,13 @@ public class SWMap {
 	
 	public void startRun(){
 		mTrackPoints.clear();
-		mMapController.setZoom(15);
+		//mMapController.setZoom(15);
 		goCurPos();
 		mBMapMan.getLocationManager().requestLocationUpdates(mLocationListener);
+		mStartTime.setToNow();
+		mEndTime.setToNow();
+		
+		mTimer.schedule(mTask,0,1000);
 		mRuning = true;
 		
 //		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
@@ -168,9 +204,13 @@ public class SWMap {
 	}
 	
 	public void stopRun(){
-		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
+		
 		mRuning = false;
+		mTimer.cancel();
+		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
 		mSpeed = 0.0f;
+		mDistance = 0.0f;
+		mEndTime.setToNow();
 	}
 	
 	public ArrayList<GeoPoint> getTrackPoints(){
@@ -183,7 +223,52 @@ public class SWMap {
 		return mSpeed;
 	}
 	
+	public float getDistance(){
+		return mDistance;
+	}
+	
+	public Time getRunTime(){
+		Time runTime = new Time();
+		if(isRuning()){
+			Time curTime = new Time(); 
+			curTime.setToNow();
+			long millis = curTime.toMillis(false)-mStartTime.toMillis(false);
+			runTime.set(millis);
+		}else{
+			long millis = mEndTime.toMillis(false)-mStartTime.toMillis(false);
+			runTime.set(millis);
+		}
+		return runTime;
+	}
+	
 	public void setHandler(SWHandler handler){
 		mHandler = handler;
+	}
+	
+	public double GetDistance(double lon1, double lat1, double lon2, double lat2)
+	{
+		double ew1, ns1, ew2, ns2;
+
+		double distance;
+
+		// 角度转换为弧度
+		ew1 = lon1 * DEF_PI180;
+		ns1 = lat1 * DEF_PI180;
+		ew2 = lon2 * DEF_PI180;
+		ns2 = lat2 * DEF_PI180;
+
+		// 求大圆劣弧与球心所夹的角(弧度)
+		distance = Math.sin(ns1) * Math.sin(ns2) + Math.cos(ns1) * Math.cos(ns2) * Math.cos(ew1 - ew2);
+
+		// 调整到[-1..1]范围内，避免溢出
+		if (distance > 1.0)
+			distance = 1.0;
+		else if (distance < -1.0)
+			 distance = -1.0;
+
+		// 求大圆劣弧长度
+		distance = DEF_R * Math.acos(distance);
+		
+		return distance;
 	}
 }

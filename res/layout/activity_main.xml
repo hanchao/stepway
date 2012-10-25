@@ -11,14 +11,15 @@
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentTop="true"
 	    android:layout_centerHorizontal="true" >
-
+
 		<ImageView
 		    android:id="@+id/imageViewBar"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:layout_alignParentLeft="true"
 		    android:layout_alignParentTop="true"
-		    android:src="@drawable/bar" />
+		    android:src="@drawable/bar"
+		    android:visibility="invisible" />
 
 		<TextView
 		    android:id="@+id/textViewBar"
@@ -29,7 +30,8 @@
 		    android:textColor="#000000" 
 			android:textSize="18dip"
 			android:textStyle="bold"  
-		    android:text="" />
+		    android:text=""
+		    android:visibility="invisible" />
 
 	</RelativeLayout>
 
@@ -45,7 +47,8 @@
 		    android:layout_height="wrap_content"
 		    android:layout_alignParentLeft="true"
 		    android:layout_alignParentTop="true"
-		    android:src="@drawable/speed" />
+		    android:src="@drawable/speed"
+		    android:visibility="invisible" />
 
 		<TextView
 		    android:id="@+id/textViewSpeed"
@@ -58,7 +61,8 @@
 		    android:text=""
 		    android:textColor="#000000"
 		    android:textSize="18dip"
-		    android:textStyle="bold" />
+		    android:textStyle="bold"
+		    android:visibility="invisible" />
 
 	</RelativeLayout>
 
