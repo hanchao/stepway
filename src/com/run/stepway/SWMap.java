@@ -45,15 +45,9 @@ public class SWMap {
 	
 	SWHandler mHandler = null;
 	
-	Timer mTimer = new Timer( );
+	Timer mTimer = null;
 
-	TimerTask mTask = new TimerTask( ) {
-		public void run ( ) {
-			Message message = new Message( );
-			message.what = SWHandler.REFRESH;
-			mHandler.sendMessage(message);
-		}
-	};
+	TimerTask mTask = null;
 	
 	static SWMap mMap = null;
 	
@@ -190,7 +184,14 @@ public class SWMap {
 		mBMapMan.getLocationManager().requestLocationUpdates(mLocationListener);
 		mStartTime.setToNow();
 		mEndTime.setToNow();
-		
+		mTimer = new Timer();
+		mTask = new TimerTask( ) {
+				public void run ( ) {
+					Message message = new Message( );
+					message.what = SWHandler.REFRESH;
+					mHandler.sendMessage(message);
+				}
+			};
 		mTimer.schedule(mTask,0,1000);
 		mRuning = true;
 		
@@ -208,6 +209,7 @@ public class SWMap {
 		
 		mRuning = false;
 		mTimer.cancel();
+		mTimer.purge();
 		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
 		mSpeed = 0.0f;
 		mDistance = 0.0f;
