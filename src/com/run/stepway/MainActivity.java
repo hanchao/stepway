@@ -98,6 +98,8 @@ public class MainActivity extends MapActivity {
     	        relativeLayoutBar.setVisibility(View.INVISIBLE);
     	        relativeLayoutSpeed.setVisibility(View.INVISIBLE);
     			item.setTitle("¿ªÊ¼ÅÜ²½");
+                Intent intent = new Intent(MainActivity.this,ResultActivity.class);
+                startActivity(intent);
     		}
 
 

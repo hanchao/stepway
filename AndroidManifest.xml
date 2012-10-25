@@ -1,6 +1,7 @@
-<manifest package="com.run.stepway"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.run.stepway"
     android:versionCode="1"
-    android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="3" />
 
@@ -16,27 +17,26 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar" >
-        
         <activity
             android:name=".SplashActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_splash" >
+            android:label="@string/title_activity_splash"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_main"
             android:screenOrientation="sensor" >
         </activity>
-
-
-
+        <activity
+            android:name=".ResultActivity"
+            android:label="@string/title_activity_result" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
