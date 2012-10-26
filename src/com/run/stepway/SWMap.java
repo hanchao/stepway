@@ -245,20 +245,22 @@ public class SWMap {
 	}
 	
 	public float getBurn(){
-		//快跑(一小时12公里)700卡
-		//慢跑(一小时9公里)655卡
-		//快走(一小时8公里)555卡
-		//慢走(一小时4公里)255卡
 		float burn = 0.0f;
 		float averageSpeed = getAverageSpeed()/0.2778f;
-		if(averageSpeed<=6){//慢走
-			burn = 255 * getDistance()/1000;
-		}else if(averageSpeed<=8.5){//快走
-			burn = 555 * getDistance()/1000;
-		}else if(averageSpeed<=11.5){//慢跑
-			burn = 655 * getDistance()/1000;
-		}else{//快跑
-			burn = 700 * getDistance()/1000;
+		Time time = getRunTime();
+		float hours = time.hour + time.minute / 60.0f + time.second / 3600.0f;
+		if(averageSpeed<=4){//随意走
+			burn = 210.80f * hours;
+		}else if(averageSpeed<=6){//慢走
+			burn = 289.00f * hours;
+		}else if(averageSpeed<=10){//跑步(8公里/小时)
+			burn = 680.00f * hours;
+		}else if(averageSpeed<=12){//跑步(12公里/小时)
+			burn = 1020.00f * hours;
+		}else if(averageSpeed<=18){//跑步(16公里/小时)
+			burn = 1360.00f * hours;
+		}else{//跑步(20公里/小时
+			burn = 1700.00f * hours;
 		}
 		return burn;
 	}

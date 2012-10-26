@@ -20,7 +20,7 @@ public class ResultActivity extends Activity {
         TextView textViewMostSpeed = (TextView)findViewById(R.id.textViewMostSpeed);
         
 		float burn = SWMap.GetInstance().getBurn();
-		String infoBurn = String.format("%.1f¿¨", burn);
+		String infoBurn = String.format("%.1f´ó¿¨", burn);
 		textViewBurn.setText(infoBurn);
 		
 		float distance = SWMap.GetInstance().getDistance();
@@ -36,7 +36,7 @@ public class ResultActivity extends Activity {
 		String infoSpeed = String.format("%.1fkm/h", speed/0.2778);
 		textViewAverageSpeed.setText(infoSpeed);
 		
-		float mostSpeed = SWMap.GetInstance().getSpeed();
+		float mostSpeed = SWMap.GetInstance().getMaxSpeed();
 		String info = String.format("%.1fkm/h", mostSpeed/0.2778);
 		textViewMostSpeed.setText(info);
 		
