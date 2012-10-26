@@ -6,5 +6,6 @@
     <string name="title_activity_main">步途</string>
     <string name="title_activity_splash">步途</string>
     <string name="title_activity_result">ResultActivity</string>
+    <string name="title_activity_share">ShareActivity</string>
 
 </resources>

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,7 @@ import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 
@@ -29,23 +31,40 @@ public class SWWeibo {
 	private static final String PREFERENCES_NAME = "com_weibo_sdk_android";
 	Weibo mWeibo = null;
 	Oauth2AccessToken accessToken = null;
-	MainActivity mMainActivity = null;
+	Activity mActivity = null;
 	SsoHandler mSsoHandler = null;
-	SWHandler mHandler = null;
-	public SWWeibo(){
+	Handler mHandler = null;
+	
+	public static final int AURHORIZE_SUCCESS = 101;
+	public static final int AURHORIZE_ERROR = 102;
+	public static final int SHARE_SUCCESS = 103;
+	public static final int SHARE_ERROR = 104;
+	
+	static SWWeibo mSWWeibo = null;
+	
+	private SWWeibo(){
 		mWeibo = Weibo.getInstance("1398278549", "http://hanchao0123.diandian.com/");
 	}
 	
-	public void setMainActivity(MainActivity mainActivity){
-		mMainActivity = mainActivity;
+	static SWWeibo GetInstance(){
+		if(mSWWeibo == null){
+			mSWWeibo = new SWWeibo();
+		}
+		return mSWWeibo;
 	}
 	
-	public void setHandler(SWHandler handler){
+	public void setActivity(Activity activity){
+		mActivity = activity;
+	}
+	
+	public void setHandler(Handler handler){
 		mHandler = handler;
 	}
 	
 	public boolean isAuthorize(){
-		accessToken = readAccessToken();
+		if(accessToken == null){
+			accessToken = readAccessToken();
+		}
 		return accessToken.isSessionValid();
 	}
 	
@@ -53,13 +72,13 @@ public class SWWeibo {
 		accessToken = readAccessToken();
         if(!accessToken.isSessionValid()){
         	//mWeibo.authorize(mMainActivity, new AuthDialogListener());
-            mSsoHandler =new SsoHandler(mMainActivity,mWeibo);
+            mSsoHandler =new SsoHandler(mActivity,mWeibo);
             mSsoHandler.authorize( new AuthDialogListener());
         }
 	}
 	
 	public void keepAccessToken(Oauth2AccessToken token) {
-		SharedPreferences pref = mMainActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+		SharedPreferences pref = mActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
 		Editor editor = pref.edit();
 		editor.putString("token", token.getToken());
 		editor.putLong("expiresTime", token.getExpiresTime());
@@ -67,7 +86,7 @@ public class SWWeibo {
 	}
 	
 	public void clear(){
-	    SharedPreferences pref = mMainActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+	    SharedPreferences pref = mActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
 	    Editor editor = pref.edit();
 	    editor.clear();
 	    editor.commit();
@@ -75,7 +94,7 @@ public class SWWeibo {
 
 	public Oauth2AccessToken readAccessToken(){
 		Oauth2AccessToken token = new Oauth2AccessToken();
-		SharedPreferences pref = mMainActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+		SharedPreferences pref = mActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
 		token.setToken(pref.getString("token", ""));
 		token.setExpiresTime(pref.getLong("expiresTime", 0));
 		return token;
@@ -107,7 +126,7 @@ public class SWWeibo {
 			if (accessToken.isSessionValid()) {
 				keepAccessToken(accessToken);
 				Message msg = new Message();
-				msg.what = SWHandler.WEIBO_AURHORIZE_SUCCESS;
+				msg.what = AURHORIZE_SUCCESS;
 				mHandler.sendMessage(msg);
 			}
 		}
@@ -115,7 +134,7 @@ public class SWWeibo {
 		@Override
 		public void onError(WeiboDialogError e) {
 			Message msg = new Message();
-			msg.what = SWHandler.WEIBO_AURHORIZE_ERROR;
+			msg.what = AURHORIZE_ERROR;
 			mHandler.sendMessage(msg);
 		}
 
@@ -127,7 +146,7 @@ public class SWWeibo {
 		@Override
 		public void onWeiboException(WeiboException e) {
 			Message msg = new Message();
-			msg.what = SWHandler.WEIBO_AURHORIZE_ERROR;
+			msg.what = AURHORIZE_ERROR;
 			mHandler.sendMessage(msg);
 		}
 
@@ -139,7 +158,7 @@ public class SWWeibo {
 		public void onComplete(String arg0) {
 			// TODO Auto-generated method stub
 			Message msg = new Message();
-			msg.what = SWHandler.WEIBO_SHARE_SUCCESS;
+			msg.what = SHARE_SUCCESS;
 			mHandler.sendMessage(msg);
 		}
 
@@ -147,7 +166,7 @@ public class SWWeibo {
 		public void onError(WeiboException arg0) {
 			// TODO Auto-generated method stub
 			Message msg = new Message();
-			msg.what = SWHandler.WEIBO_SHARE_ERROR;
+			msg.what = SHARE_ERROR;
 			mHandler.sendMessage(msg);
 		}
 
@@ -155,7 +174,7 @@ public class SWWeibo {
 		public void onIOException(IOException arg0) {
 			// TODO Auto-generated method stub
 			Message msg = new Message();
-			msg.what = SWHandler.WEIBO_SHARE_ERROR;
+			msg.what = SHARE_ERROR;
 			mHandler.sendMessage(msg);
 		}
 	

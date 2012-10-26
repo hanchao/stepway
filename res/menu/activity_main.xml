@@ -2,8 +2,8 @@
     <group android:id="@+id/groupMain">
         <item android:id="@+id/itemRun" android:title="开始跑步"></item>
         <item android:id="@+id/itemPos" android:title="我的位置"></item>
+        <item android:id="@+id/itemDetail" android:title="详情"></item>
         <item android:id="@+id/itemSatellite" android:title="卫星图"></item>
-        <item android:id="@+id/itemShare" android:title="分享"></item>
         <item android:id="@+id/itemAbout" android:title="关于"></item>
         <item android:id="@+id/itemExit" android:title="退出"></item>
         

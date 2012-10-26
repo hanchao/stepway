@@ -4,7 +4,7 @@
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="3" />
-    
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
     </uses-permission>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" >
@@ -46,11 +46,17 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_main"
-            android:screenOrientation="sensor" >
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".ResultActivity"
-            android:label="@string/title_activity_result" >
+            android:label="@string/title_activity_result"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ShareActivity"
+            android:label="@string/title_activity_share" 
+            android:windowSoftInputMode="adjustResize" >
         </activity>
     </application>
 

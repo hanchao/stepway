@@ -1,0 +1,46 @@
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#BFBFBF" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:textColor="#000000"
+            android:textSize="18dip"
+            android:textStyle="bold"
+            android:text="分享微博" />
+
+        <EditText
+            android:id="@+id/editTextContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView1"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/textView1"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:ems="10"
+            android:textColor="#000000"
+            android:textSize="18dip"
+            android:text="我刚使用#步途#完成跑步运动00.00公里,用时00分钟,平均速度00.00公里/小时,燃烧000.0大卡。快来和我一起运动吧！" />
+            
+        <Button
+            android:id="@+id/buttonShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/editTextContent"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="26dp"
+            android:text="分享"
+            android:textColor="#000000"
+            android:textSize="18dip"
+            android:textStyle="bold" />
+
+    </RelativeLayout>

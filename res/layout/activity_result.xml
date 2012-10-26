@@ -66,7 +66,7 @@
         android:layout_toRightOf="@+id/imageViewBurn"
         android:layout_marginLeft="64dp"
 	    android:textColor="#FFBB1C"
-	    android:textSize="32dip"
+	    android:textSize="24dip"
 	    android:textStyle="bold"
         android:text="0.0大卡" />
 

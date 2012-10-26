@@ -9,6 +9,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
@@ -36,6 +37,8 @@ public class SWMap {
 	
 	static final String PREFERENCES_NAME = "com_bmap_sdk_android";
 	
+	public static final int GPS_REFRESH = 100;
+	
 	MainActivity mMainActivity = null;
 	MapView mMapView = null;
 	MapController mMapController = null;
@@ -51,7 +54,12 @@ public class SWMap {
 	Time mStartTime = new Time(); 
 	Time mEndTime = new Time(); 
 	
-	SWHandler mHandler = null;
+	int mMinLat = 0;
+	int mMaxLat = 0;
+	int mMinLon = 0;
+	int mMaxLon = 0;
+	
+	Handler mHandler = null;
 	
 	Timer mTimer = null;
 
@@ -66,7 +74,7 @@ public class SWMap {
 		return mMap;
 	}
 	
-	public SWMap(){
+	private SWMap(){
 		
 	}
 
@@ -108,7 +116,17 @@ public class SWMap {
 				        if(!mTrackPoints.isEmpty()){
 				        	GeoPoint pointLast = mTrackPoints.get(mTrackPoints.size()-1);
 				        	mDistance += GetDistance(location.getLongitude(),location.getLatitude(),
-				        			pointLast.getLongitudeE6()/1E6,pointLast.getLatitudeE6()/1E6);
+				        			pointLast.getLongitudeE6()/1E6,pointLast.getLatitudeE6()/1E6);		
+				        	
+				        	mMinLat = mMinLat < point.getLatitudeE6()?mMinLat : point.getLatitudeE6();
+				        	mMaxLat = mMaxLat > point.getLatitudeE6()?mMaxLat : point.getLatitudeE6();
+				        	mMinLon = mMinLon < point.getLongitudeE6()?mMinLon : point.getLongitudeE6();
+				        	mMaxLon = mMaxLon > point.getLongitudeE6()?mMaxLon : point.getLongitudeE6();
+				        }else{
+				        	mMinLat = point.getLatitudeE6();
+				        	mMaxLat = point.getLatitudeE6();
+				        	mMinLon = point.getLongitudeE6();
+				        	mMaxLon = point.getLongitudeE6();
 				        }
 				        mTrackPoints.add(point);
 				        
@@ -116,9 +134,12 @@ public class SWMap {
 				        if(mMaxSpeed<mSpeed){
 				        	mMaxSpeed = mSpeed;
 				        }
-						Message msg = new Message();
-						msg.what = SWHandler.REFRESH;
-						mHandler.sendMessage(msg);
+				        			    	
+				        if(mHandler!=null){
+							Message msg = new Message();
+							msg.what = GPS_REFRESH;
+							mHandler.sendMessage(msg);
+				        }
 					}
 			       // mMapController.setCenter(point);
 				}else{
@@ -187,6 +208,13 @@ public class SWMap {
 		}
 	}
 	
+	public void viewTrack(){
+		if(mMaxLat - mMinLat >0 || mMaxLon - mMinLon >0){
+			mMapController.setCenter(new GeoPoint((mMinLat + mMaxLat)/2,(mMinLon + mMaxLon)/2));
+			mMapController.zoomToSpan(mMaxLat - mMinLat, mMaxLon - mMinLon);
+		}
+	}
+	
 	public boolean isRuning(){
 		return mRuning;
 	}
@@ -204,9 +232,11 @@ public class SWMap {
 		mTimer = new Timer();
 		mTask = new TimerTask( ) {
 				public void run ( ) {
-					Message message = new Message( );
-					message.what = SWHandler.REFRESH;
-					mHandler.sendMessage(message);
+					if(mHandler!=null){
+						Message message = new Message( );
+						message.what = GPS_REFRESH;
+						mHandler.sendMessage(message);
+					}
 				}
 			};
 		mTimer.schedule(mTask,0,1000);
@@ -229,6 +259,33 @@ public class SWMap {
 		mTimer.purge();
 		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
 		mEndTime.setToNow();
+     
+		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
+      (int) (116.404 * 1E6)));
+
+		mTrackPoints.add(new GeoPoint((int) (39.935 * 1E6),
+      (int) (116.404 * 1E6)));
+
+		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
+      (int) (116.304 * 1E6)));
+		
+    	mMinLat = (int)(39.915 * 1E6);
+    	mMaxLat = (int)(39.915 * 1E6);
+    	mMinLon = (int)(116.404 * 1E6);
+    	mMaxLon = (int)(116.404 * 1E6);
+    	
+    	mMinLat = mMinLat < (int)(39.935 * 1E6)?mMinLat : (int)(39.935 * 1E6);
+    	mMaxLat = mMaxLat > (int)(39.935 * 1E6)?mMaxLat : (int)(39.935 * 1E6);
+    	mMinLon = mMinLon < (int)(116.404 * 1E6)?mMinLon : (int)(116.404 * 1E6);
+    	mMaxLon = mMaxLon > (int)(116.404 * 1E6)?mMaxLon : (int)(116.404 * 1E6);
+    	
+    	mMinLat = mMinLat < (int)(39.915 * 1E6)?mMinLat : (int)(39.915 * 1E6);
+    	mMaxLat = mMaxLat > (int)(39.915 * 1E6)?mMaxLat : (int)(39.915 * 1E6);
+    	mMinLon = mMinLon < (int)(116.304 * 1E6)?mMinLon : (int)(116.304 * 1E6);
+    	mMaxLon = mMaxLon > (int)(116.304 * 1E6)?mMaxLon : (int)(116.304 * 1E6);
+
+
+		viewTrack();
 	}
 	
 	public ArrayList<GeoPoint> getTrackPoints(){
@@ -242,6 +299,10 @@ public class SWMap {
 	}
 	
 	public float getMaxSpeed(){
+		float averageSpeed = getAverageSpeed();
+		if(mMaxSpeed<averageSpeed){//防止gps不准确导致最大速度小于平均速度的情况。
+			mMaxSpeed = averageSpeed*1.2f;
+		}
 		return mMaxSpeed;
 	}
 	
@@ -291,7 +352,7 @@ public class SWMap {
 		return runTime;
 	}
 	
-	public void setHandler(SWHandler handler){
+	public void setHandler(Handler handler){
 		mHandler = handler;
 	}
 	
@@ -353,5 +414,14 @@ public class SWMap {
 		
 		mMapController.setCenter(point);  //设置地图中心点
 		mMapController.setZoom(zoom);    //设置地图zoom级别
+	}
+	
+	public Bitmap getBitmap() {
+
+		mMapView.setBuiltInZoomControls(false);
+		mMapView.setDrawingCacheEnabled(true);//允许当前窗口保存缓存信息，这样getDrawingCache()方法才会返回一个Bitmap
+		Bitmap bmp = Bitmap.createBitmap(mMapView.getDrawingCache());
+		mMapView.setBuiltInZoomControls(true);
+		return bmp;
 	}
 }

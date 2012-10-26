@@ -41,16 +41,11 @@ import com.weibo.sdk.android.net.RequestListener;
 
 public class MainActivity extends MapActivity {
 
-	
-	public SWHandler mHandler = null;
-	
 	RelativeLayout relativeLayoutBar = null;
 	RelativeLayout relativeLayoutSpeed = null;
 	TextView mTextViewTime = null;
 	TextView mTextViewDistance = null;
 	TextView mTextViewSpeed = null;
-	
-	SWWeibo mWeibo = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,13 +67,10 @@ public class MainActivity extends MapActivity {
         
         SWMap.GetInstance().onCreate(this, mapView);
         
-        mHandler = new SWHandler();
-        mHandler.setMainActivity(this);
-        SWMap.GetInstance().setHandler(mHandler);
+        SWMap.GetInstance().setHandler(new SWMainHandler());
         	
-        mWeibo = new SWWeibo();
-        mWeibo.setMainActivity(this);
-        mWeibo.setHandler(mHandler);
+        SWWeibo.GetInstance().setActivity(this);
+        SWWeibo.GetInstance().setHandler(new SWMainHandler());
     }
   
 
@@ -104,9 +96,7 @@ public class MainActivity extends MapActivity {
     			SWMap.GetInstance().stopRun();
     	        relativeLayoutBar.setVisibility(View.INVISIBLE);
     	        relativeLayoutSpeed.setVisibility(View.INVISIBLE);
-    			item.setTitle("开始跑步");
-                Intent intent = new Intent(MainActivity.this,ResultActivity.class);
-                startActivity(intent);
+    			item.setTitle("开始跑步");    		
     		}
 
 
@@ -116,20 +106,9 @@ public class MainActivity extends MapActivity {
     		SWMap.GetInstance().goCurPos();
     	}
     	break;
-    	case R.id.itemShare: {
-    		Bitmap screen = shot();
-    		try {
-    			saveMyBitmap(screen,"/sdcard/dcim/beijing.png");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		
-    		if(mWeibo.isAuthorize()){
-    			share();
-    		}
-    		mWeibo.authorize();
-    		
+    	case R.id.itemDetail: {
+            Intent intent = new Intent(MainActivity.this,ResultActivity.class);
+            startActivity(intent);	
     	}
     	break; 
     	case R.id.itemSatellite: { 
@@ -215,7 +194,7 @@ public class MainActivity extends MapActivity {
 	}
     
     public void share(){	
-    	mWeibo.Share("轨迹", "/sdcard/dcim/beijing.png", "", "");
+    	SWWeibo.GetInstance().Share("轨迹", "/sdcard/dcim/beijing.png", "", "");
     }
     
     public void weiboAurhorizeSuccess(){	
@@ -240,9 +219,10 @@ public class MainActivity extends MapActivity {
 	 * @return
 	 */
 	private Bitmap shot() {
-		View view = getWindow().getDecorView();
-		Display display = this.getWindowManager().getDefaultDisplay();
-		view.layout(0, 0, display.getWidth(), display.getHeight());
+		MapView view = (MapView)findViewById(R.id.bmapsView);
+//		View view = getWindow().getDecorView();
+//		Display display = this.getWindowManager().getDefaultDisplay();
+//		view.layout(0, 0, display.getWidth(), display.getHeight());
 		view.setDrawingCacheEnabled(true);//允许当前窗口保存缓存信息，这样getDrawingCache()方法才会返回一个Bitmap
 		Bitmap bmp = Bitmap.createBitmap(view.getDrawingCache());
 		return bmp;
@@ -312,6 +292,8 @@ public class MainActivity extends MapActivity {
 	@Override
 	protected void onResume() {
 	    SWMap.GetInstance().onResume();
+        SWWeibo.GetInstance().setActivity(this);
+        SWWeibo.GetInstance().setHandler(new SWMainHandler());
 	    super.onResume();
 	}
 	
@@ -319,10 +301,41 @@ public class MainActivity extends MapActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mWeibo.onActivityResult(requestCode, resultCode, data);
+        SWWeibo.GetInstance().onActivityResult(requestCode, resultCode, data);
     }
 
-    
+    class SWMainHandler extends Handler{
+
+    	@Override
+    	public void handleMessage(Message msg) {
+    		// TODO Auto-generated method stub
+    		try {
+    			switch (msg.what) {
+    			case SWMap.GPS_REFRESH:
+    				refreshSpeed();
+    				refreshBar();
+    				break;			
+    			case SWWeibo.AURHORIZE_SUCCESS:
+    				weiboAurhorizeSuccess();
+    				share();
+    				break;
+    			case SWWeibo.AURHORIZE_ERROR:
+    				weiboAurhorizeError();
+    				break;
+    			case SWWeibo.SHARE_SUCCESS:
+    				weiboShareSuccess();
+    				break;
+    			case SWWeibo.SHARE_ERROR:
+    				weiboShareError();
+    				break;
+    			default:
+    				break;
+    			}
+    		} catch (Exception ex) {
+
+    		}
+    	}
+    }
 }
 
 
