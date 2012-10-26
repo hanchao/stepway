@@ -249,7 +249,9 @@ public class SWMap {
 		float averageSpeed = getAverageSpeed()/0.2778f;
 		Time time = getRunTime();
 		float hours = time.hour + time.minute / 60.0f + time.second / 3600.0f;
-		if(averageSpeed<=4){//随意走
+		if(averageSpeed <= 1){//站着
+			burn = 120.09f * hours;
+		}else if(averageSpeed<=4){//随意走
 			burn = 210.80f * hours;
 		}else if(averageSpeed<=6){//慢走
 			burn = 289.00f * hours;
