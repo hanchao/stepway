@@ -41,24 +41,25 @@ import com.weibo.sdk.android.net.RequestListener;
 
 public class MainActivity extends MapActivity {
 
-	RelativeLayout relativeLayoutBar = null;
-	RelativeLayout relativeLayoutSpeed = null;
+	RelativeLayout mRelativeLayoutBar = null;
+	RelativeLayout mRelativeLayoutSpeed = null;
 	TextView mTextViewTime = null;
 	TextView mTextViewDistance = null;
 	TextView mTextViewSpeed = null;
+	MenuItem mItemDetail = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);    
         setContentView(R.layout.activity_main);
-        relativeLayoutBar = (RelativeLayout)findViewById(R.id.relativeLayoutBar);
-        relativeLayoutSpeed = (RelativeLayout)findViewById(R.id.relativeLayoutSpeed);
+        mRelativeLayoutBar = (RelativeLayout)findViewById(R.id.relativeLayoutBar);
+        mRelativeLayoutSpeed = (RelativeLayout)findViewById(R.id.relativeLayoutSpeed);
         mTextViewTime = (TextView)findViewById(R.id.textViewTime);
         mTextViewDistance = (TextView)findViewById(R.id.textViewDistance);
         mTextViewSpeed = (TextView)findViewById(R.id.textViewSpeed);
-        relativeLayoutBar.setVisibility(View.INVISIBLE);
-        relativeLayoutSpeed.setVisibility(View.INVISIBLE);
-        
+        mRelativeLayoutBar.setVisibility(View.INVISIBLE);
+        mRelativeLayoutSpeed.setVisibility(View.INVISIBLE);
+        mItemDetail = (MenuItem)findViewById(R.id.itemDetail);
         if(!isGpsEnable()){
         	enableGPS();
         }
@@ -89,13 +90,13 @@ public class MainActivity extends MapActivity {
 				SWMap.GetInstance().startRun();	
 		        refreshSpeed();
 		        refreshBar();
-		        relativeLayoutBar.setVisibility(View.VISIBLE);
-		        relativeLayoutSpeed.setVisibility(View.VISIBLE);
+		        mRelativeLayoutBar.setVisibility(View.VISIBLE);
+		        mRelativeLayoutSpeed.setVisibility(View.VISIBLE);
 				item.setTitle("结束跑步");
     		}else{
     			SWMap.GetInstance().stopRun();
-    	        relativeLayoutBar.setVisibility(View.INVISIBLE);
-    	        relativeLayoutSpeed.setVisibility(View.INVISIBLE);
+    	        mRelativeLayoutBar.setVisibility(View.INVISIBLE);
+    	        mRelativeLayoutSpeed.setVisibility(View.INVISIBLE);
     			item.setTitle("开始跑步");    		
     		}
 
@@ -107,8 +108,16 @@ public class MainActivity extends MapActivity {
     	}
     	break;
     	case R.id.itemDetail: {
-            Intent intent = new Intent(MainActivity.this,ResultActivity.class);
-            startActivity(intent);	
+    		if(!SWMap.GetInstance().isRunEnd()){
+	    		Builder ad = new  AlertDialog.Builder(this);   
+	    		ad.setTitle("步途" );
+	    		ad.setMessage("跑步还未完成" );
+	    		ad.setPositiveButton("确定" ,  null );
+	    		ad.show();
+    		}else{
+	            Intent intent = new Intent(MainActivity.this,ResultActivity.class);
+	            startActivity(intent);	
+    		}
     	}
     	break; 
     	case R.id.itemSatellite: { 

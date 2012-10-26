@@ -46,6 +46,7 @@ public class SWMap {
 	MyLocationOverlay mMyloc = null;
 	boolean mLocated = false;
 	boolean mRuning = false;
+	boolean mRunEnd = false;
 	ArrayList<GeoPoint> mTrackPoints = new ArrayList<GeoPoint>();
 	float mSpeed = 0.0f;
 	float mMaxSpeed = 0.0f;
@@ -199,8 +200,12 @@ public class SWMap {
 		mBMapMan.getLocationManager().disableProvider(MKLocationManager.MK_GPS_PROVIDER);
 	}
 	
+	public Location getCurLocation(){
+		return mBMapMan.getLocationManager().getLocationInfo();
+	}
+	
 	public void goCurPos(){
-		Location location = mBMapMan.getLocationManager().getLocationInfo();
+		Location location = getCurLocation();
 		if(location != null){
 			GeoPoint point = new GeoPoint((int) (location.getLatitude() * 1E6),
 	                (int) (location.getLongitude() * 1E6));
@@ -217,6 +222,10 @@ public class SWMap {
 	
 	public boolean isRuning(){
 		return mRuning;
+	}
+	
+	public boolean isRunEnd(){
+		return mRunEnd;
 	}
 	
 	public void startRun(){
@@ -241,6 +250,7 @@ public class SWMap {
 			};
 		mTimer.schedule(mTask,0,1000);
 		mRuning = true;
+		mRunEnd = false;
 		
 //		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
 //      (int) (116.404 * 1E6)));
@@ -250,40 +260,31 @@ public class SWMap {
 //
 //		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
 //      (int) (116.304 * 1E6)));
+		
+//    	mMinLat = (int)(39.915 * 1E6);
+//    	mMaxLat = (int)(39.915 * 1E6);
+//    	mMinLon = (int)(116.404 * 1E6);
+//    	mMaxLon = (int)(116.404 * 1E6);
+//    	
+//    	mMinLat = mMinLat < (int)(39.935 * 1E6)?mMinLat : (int)(39.935 * 1E6);
+//    	mMaxLat = mMaxLat > (int)(39.935 * 1E6)?mMaxLat : (int)(39.935 * 1E6);
+//    	mMinLon = mMinLon < (int)(116.404 * 1E6)?mMinLon : (int)(116.404 * 1E6);
+//    	mMaxLon = mMaxLon > (int)(116.404 * 1E6)?mMaxLon : (int)(116.404 * 1E6);
+//    	
+//    	mMinLat = mMinLat < (int)(39.915 * 1E6)?mMinLat : (int)(39.915 * 1E6);
+//    	mMaxLat = mMaxLat > (int)(39.915 * 1E6)?mMaxLat : (int)(39.915 * 1E6);
+//    	mMinLon = mMinLon < (int)(116.304 * 1E6)?mMinLon : (int)(116.304 * 1E6);
+//    	mMaxLon = mMaxLon > (int)(116.304 * 1E6)?mMaxLon : (int)(116.304 * 1E6);
 	}
 	
 	public void stopRun(){
 		
 		mRuning = false;
+		mRunEnd = true;
 		mTimer.cancel();
 		mTimer.purge();
 		mBMapMan.getLocationManager().removeUpdates(mLocationListener);
 		mEndTime.setToNow();
-     
-		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
-      (int) (116.404 * 1E6)));
-
-		mTrackPoints.add(new GeoPoint((int) (39.935 * 1E6),
-      (int) (116.404 * 1E6)));
-
-		mTrackPoints.add(new GeoPoint((int) (39.915 * 1E6),
-      (int) (116.304 * 1E6)));
-		
-    	mMinLat = (int)(39.915 * 1E6);
-    	mMaxLat = (int)(39.915 * 1E6);
-    	mMinLon = (int)(116.404 * 1E6);
-    	mMaxLon = (int)(116.404 * 1E6);
-    	
-    	mMinLat = mMinLat < (int)(39.935 * 1E6)?mMinLat : (int)(39.935 * 1E6);
-    	mMaxLat = mMaxLat > (int)(39.935 * 1E6)?mMaxLat : (int)(39.935 * 1E6);
-    	mMinLon = mMinLon < (int)(116.404 * 1E6)?mMinLon : (int)(116.404 * 1E6);
-    	mMaxLon = mMaxLon > (int)(116.404 * 1E6)?mMaxLon : (int)(116.404 * 1E6);
-    	
-    	mMinLat = mMinLat < (int)(39.915 * 1E6)?mMinLat : (int)(39.915 * 1E6);
-    	mMaxLat = mMaxLat > (int)(39.915 * 1E6)?mMaxLat : (int)(39.915 * 1E6);
-    	mMinLon = mMinLon < (int)(116.304 * 1E6)?mMinLon : (int)(116.304 * 1E6);
-    	mMaxLon = mMaxLon > (int)(116.304 * 1E6)?mMaxLon : (int)(116.304 * 1E6);
-
 
 		viewTrack();
 	}

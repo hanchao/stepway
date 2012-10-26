@@ -9,6 +9,7 @@ import java.util.TimerTask;
 
 import com.run.stepway.MainActivity.SWMainHandler;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,17 +27,20 @@ import android.view.View.OnKeyListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class ShareActivity extends Activity {
 
-	EditText editTextContent = null;
+	EditText mEditTextContent = null;
+	ProgressBar mProgressBarShare = null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
-        editTextContent = (EditText)findViewById(R.id.editTextContent);
+        mEditTextContent = (EditText)findViewById(R.id.editTextContent);
+        mProgressBarShare = (ProgressBar)findViewById(R.id.progressBarShare);
         
         float burn = SWMap.GetInstance().getBurn();
 		
@@ -51,10 +55,10 @@ public class ShareActivity extends Activity {
         		",用时%d分钟,平均速度%.2f公里/小时,燃烧%.1f大卡。快来和我一起运动吧！", 
         		distance,minute,speed,burn);
         
-        editTextContent.setText(content);
-		editTextContent.setSelection(editTextContent.length());
+        mEditTextContent.setText(content);
+        mEditTextContent.setSelection(mEditTextContent.length());
 		
-		editTextContent.setOnKeyListener(new OnKeyListener(){
+        mEditTextContent.setOnKeyListener(new OnKeyListener(){
 
 			@Override
 			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
@@ -64,11 +68,13 @@ public class ShareActivity extends Activity {
 		    			share();
 		    		}
 		    		SWWeibo.GetInstance().authorize();
+		    		return true;
 				}
 				return false;
 			}
 			
 		});
+        mProgressBarShare.setVisibility(View.INVISIBLE);
 		
 		
         Button buttonShare = (Button)findViewById(R.id.buttonShare);
@@ -90,17 +96,26 @@ public class ShareActivity extends Activity {
     }
 
     public void share(){	
-    	String content = editTextContent.getText().toString();
+    	String content = mEditTextContent.getText().toString();
     	SWMap.GetInstance().viewTrack();
 		Bitmap bmTrack = SWMap.GetInstance().getBitmap();
+		String imagePath =  getCacheDir().getAbsolutePath() + "/track.png";
 		try {
-			saveBitmap(bmTrack,"/sdcard/swtrack.png");
+			saveBitmap(bmTrack,imagePath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-    	SWWeibo.GetInstance().Share(content, "/sdcard/swtrack.png", "", "");
+		Location location = SWMap.GetInstance().getCurLocation();
+		String lat = "";
+		String lon = "";
+		if(location != null){
+			lat = String.format("%f", location.getLatitude());
+			lon = String.format("%f", location.getLongitude());
+		}
+	
+    	SWWeibo.GetInstance().Share(content, imagePath, lat, lon);
+    	mProgressBarShare.setVisibility(View.VISIBLE);
     }
     
 	public void saveBitmap(Bitmap bitmap, String bitName) throws IOException {
@@ -158,6 +173,7 @@ public class ShareActivity extends Activity {
     	@Override
     	public void handleMessage(Message msg) {
     		// TODO Auto-generated method stub
+    		mProgressBarShare.setVisibility(View.INVISIBLE);
     		try {
     			switch (msg.what) {		
     			case SWWeibo.AURHORIZE_SUCCESS:

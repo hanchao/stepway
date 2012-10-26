@@ -43,4 +43,12 @@
             android:textSize="18dip"
             android:textStyle="bold" />
 
+        <ProgressBar
+            android:id="@+id/progressBarShare"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+
     </RelativeLayout>
