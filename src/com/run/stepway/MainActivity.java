@@ -8,12 +8,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -60,6 +63,10 @@ public class MainActivity extends MapActivity {
         mTextViewSpeed = (TextView)findViewById(R.id.textViewSpeed);
         relativeLayoutBar.setVisibility(View.INVISIBLE);
         relativeLayoutSpeed.setVisibility(View.INVISIBLE);
+        
+        if(!isGpsEnable()){
+        	enableGPS();
+        }
         
         MapView mapView = (MapView)findViewById(R.id.bmapsView);
         
@@ -179,6 +186,33 @@ public class MainActivity extends MapActivity {
 		String infoDistance = String.format("%.2fkm",distance/1000);
 		mTextViewDistance.setText(infoDistance);
     }
+    
+    public boolean isGpsEnable(){
+    	//GPS是否开启  
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        boolean GPS_status = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);//
+        return GPS_status;
+    }
+    
+ // 启用GPS
+	private void enableGPS() {
+		
+		Builder ad = new  AlertDialog.Builder(this);   
+		ad.setTitle("步途" );
+		ad.setMessage("GPS未开启，是否需要开启?" );
+		ad.setPositiveButton("确定", 
+			new DialogInterface.OnClickListener(){ 
+                public void onClick(DialogInterface dialoginterface, int i){ 
+					Intent intent = new Intent(
+							Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+					startActivityForResult(intent, 0);
+                }
+			}
+		);
+		
+		ad.setNegativeButton("取消" ,  null );
+		ad.show(); 
+	}
     
     public void share(){	
     	mWeibo.Share("轨迹", "/sdcard/dcim/beijing.png", "", "");

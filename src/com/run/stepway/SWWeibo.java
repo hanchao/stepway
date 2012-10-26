@@ -59,7 +59,7 @@ public class SWWeibo {
 	}
 	
 	public void keepAccessToken(Oauth2AccessToken token) {
-		SharedPreferences pref = mMainActivity.getSharedPreferences(PREFERENCES_NAME, mMainActivity.MODE_APPEND);
+		SharedPreferences pref = mMainActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
 		Editor editor = pref.edit();
 		editor.putString("token", token.getToken());
 		editor.putLong("expiresTime", token.getExpiresTime());

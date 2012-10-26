@@ -68,7 +68,7 @@
 	    android:textColor="#FFBB1C"
 	    android:textSize="32dip"
 	    android:textStyle="bold"
-        android:text="0.0卡" />
+        android:text="0.0大卡" />
 
     <TextView
         android:id="@+id/textViewTime"

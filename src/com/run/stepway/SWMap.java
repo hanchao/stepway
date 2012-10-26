@@ -6,6 +6,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
@@ -20,6 +23,7 @@ import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapController;
 import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.MyLocationOverlay;
+import com.weibo.sdk.android.Oauth2AccessToken;
 
 public class SWMap {
 
@@ -30,6 +34,9 @@ public class SWMap {
 	static double DEF_PI180= 0.01745329252; // PI/180.0
 	static double DEF_R =6370693.5; // radius of earth
 	
+	static final String PREFERENCES_NAME = "com_bmap_sdk_android";
+	
+	MainActivity mMainActivity = null;
 	MapView mMapView = null;
 	MapController mMapController = null;
 	LocationListener mLocationListener = null;
@@ -76,19 +83,18 @@ public class SWMap {
 		}
 	}
 	
-	public void onCreate(MapActivity mapActivity, MapView mapview){
+	public void onCreate(MainActivity mapActivity, MapView mapview){
 		mBMapMan.start();
+		openGps();
 		mapActivity.initMapActivity(mBMapMan);
          
+		mMainActivity = mapActivity;
         mMapView = mapview;
         mMapView.setBuiltInZoomControls(true);  //设置启用内置的缩放控件
          
         mMapController = mMapView.getController();  // 得到mMapView的控制权,可以用它控制和驱动平移和缩放
-        GeoPoint point = new GeoPoint((int) (39.915 * 1E6),
-                (int) (116.404 * 1E6));  //用给定的经纬度构造一个GeoPoint，单位是微度 (度 * 1E6)
-//        mMapController.setCenter(point);  //设置地图中心点
-//        mMapController.setZoom(15);    //设置地图zoom级别
-        
+
+        readLocation();
         mLocationListener = new LocationListener(){
 
 			@Override
@@ -132,20 +138,24 @@ public class SWMap {
 //	        mBMapMan.destroy();
 //	        mBMapMan = null;
 //	    }
+		closeGps();
+		keepLocation();
+		mBMapMan.stop();
+		
 	}
 
 	public void onPause() {
-	    if (mBMapMan != null) {
-	        mBMapMan.stop();
-	        closeGps();
-	    }
+//	    if (mBMapMan != null) {
+//	        mBMapMan.stop();
+//	        closeGps();
+//	    }
 	}
 
 	public void onResume() {
-	    if (mBMapMan != null) {
-	        mBMapMan.start();
-	        openGps();
-	    }
+//	    if (mBMapMan != null) {
+//	        mBMapMan.start();
+//	        openGps();
+//	    }
 	}
 
 	public boolean isSatellite(){
@@ -173,7 +183,7 @@ public class SWMap {
 		if(location != null){
 			GeoPoint point = new GeoPoint((int) (location.getLatitude() * 1E6),
 	                (int) (location.getLongitude() * 1E6));
-			mMapController.setCenter(point);
+			mMapController.animateTo(point);
 		}
 	}
 	
@@ -310,5 +320,38 @@ public class SWMap {
 		distance = DEF_R * Math.acos(distance);
 		
 		return distance;
+	}
+	
+	public void keepLocation() {
+		SharedPreferences pref = mMainActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+		Editor editor = pref.edit();
+		
+		GeoPoint point = mMapView.getMapCenter();
+		int zoom = mMapView.getZoomLevel();
+		editor.putInt("Lat", point.getLatitudeE6());
+		editor.putInt("lon", point.getLongitudeE6());
+		editor.putInt("zoom", zoom);
+		editor.commit();
+	}
+	
+	public void clear(){
+	    SharedPreferences pref = mMainActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+	    Editor editor = pref.edit();
+	    editor.clear();
+	    editor.commit();
+	}
+
+	public void readLocation(){
+
+		SharedPreferences pref = mMainActivity.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+		
+		GeoPoint point = new GeoPoint((int) (39.915 * 1E6),
+                (int) (116.404 * 1E6));
+		point.setLatitudeE6(pref.getInt("Lat", (int) (39.915 * 1E6)));
+		point.setLongitudeE6(pref.getInt("lon", (int) (116.404 * 1E6)));
+		int zoom = pref.getInt("zoom", (int) (15));
+		
+		mMapController.setCenter(point);  //设置地图中心点
+		mMapController.setZoom(zoom);    //设置地图zoom级别
 	}
 }
