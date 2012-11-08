@@ -44,15 +44,15 @@ public class ShareActivity extends Activity {
         
         float burn = SWMap.GetInstance().getBurn();
 		
-		float distance = SWMap.GetInstance().getDistance();
+		float distance = SWMap.GetInstance().getDistance()/1000;
 
 		Time time = SWMap.GetInstance().getRunTime();
 		int minute = time.minute+time.hour*60;
 
-		float speed = SWMap.GetInstance().getAverageSpeed();
+		float speed = SWMap.GetInstance().getAverageSpeed()/0.2778f;
 		
         String content = String.format("我刚使用#步途#完成跑步运动%.2f公里" +
-        		",用时%d分钟,平均速度%.2f公里/小时,燃烧%.1f大卡。快来和我一起运动吧！", 
+        		",用时%d分钟,平均速度%.2f公里/小时,燃烧%.1f大卡。", 
         		distance,minute,speed,burn);
         
         mEditTextContent.setText(content);
